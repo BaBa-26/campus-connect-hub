@@ -1,16 +1,27 @@
 import { useState } from "react";
 import MarketplaceCard from "@/components/MarketplaceCard";
-import { Button } from "@/components/ui/button";
+import CreateListingDialog from "@/components/CreateListingDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
+
+interface Listing {
+  id: string;
+  title: string;
+  price: number;
+  category: string;
+  condition: string;
+  seller: string;
+  image: string;
+  description?: string;
+}
 
 const Marketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
-  const listings = [
+  const [listings, setListings] = useState<Listing[]>([
     {
+      id: "1",
       title: "MacBook Pro 2021",
       price: 1200,
       category: "Electronics",
@@ -19,6 +30,7 @@ const Marketplace = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "2",
       title: "Calculus Textbook",
       price: 45,
       category: "Books",
@@ -27,6 +39,7 @@ const Marketplace = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "3",
       title: "Mini Fridge",
       price: 80,
       category: "Furniture",
@@ -35,6 +48,7 @@ const Marketplace = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "4",
       title: "iPhone 13",
       price: 650,
       category: "Electronics",
@@ -43,6 +57,7 @@ const Marketplace = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "5",
       title: "Biology Lab Manual",
       price: 30,
       category: "Books",
@@ -51,6 +66,7 @@ const Marketplace = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "6",
       title: "Desk Chair",
       price: 50,
       category: "Furniture",
@@ -58,7 +74,25 @@ const Marketplace = () => {
       seller: "David P.",
       image: "/placeholder.svg",
     },
-  ];
+  ]);
+
+  const handleCreateListing = (newListing: Omit<Listing, "id">) => {
+    const listingWithId = {
+      ...newListing,
+      id: Date.now().toString(),
+    };
+    setListings([listingWithId, ...listings]);
+  };
+
+  const handleDeleteListing = (id: string) => {
+    setListings(listings.filter((listing) => listing.id !== id));
+  };
+
+  const filteredListings = listings.filter((listing) => {
+    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || listing.category.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen py-8">
@@ -71,9 +105,7 @@ const Marketplace = () => {
               Browse items for sale from fellow students
             </p>
           </div>
-          <Button className="bg-gradient-purple-blue">
-            <Plus className="mr-2 h-4 w-4" /> Create Listing
-          </Button>
+          <CreateListingDialog onCreateListing={handleCreateListing} />
         </div>
 
         {/* Search and Filters */}
@@ -104,9 +136,15 @@ const Marketplace = () => {
 
         {/* Listings Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map((listing, index) => (
-            <MarketplaceCard key={index} {...listing} />
-          ))}
+          {filteredListings.length > 0 ? (
+            filteredListings.map((listing) => (
+              <MarketplaceCard key={listing.id} {...listing} onDelete={handleDeleteListing} />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-muted-foreground py-12">
+              No listings found. Try adjusting your search or filters.
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import logo from "@/assets/campus-connect-logo.png";
 const Home = () => {
   const featuredListings = [
     {
+      id: "1",
       title: "MacBook Pro 2021",
       price: 1200,
       category: "Electronics",
@@ -16,6 +17,7 @@ const Home = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "2",
       title: "Calculus Textbook",
       price: 45,
       category: "Books",
@@ -24,6 +26,7 @@ const Home = () => {
       image: "/placeholder.svg",
     },
     {
+      id: "3",
       title: "Mini Fridge",
       price: 80,
       category: "Furniture",
@@ -133,8 +136,8 @@ const Home = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredListings.map((listing, index) => (
-              <MarketplaceCard key={index} {...listing} />
+            {featuredListings.map((listing) => (
+              <MarketplaceCard key={listing.id} {...listing} onDelete={() => {}} />
             ))}
           </div>
         </div>
